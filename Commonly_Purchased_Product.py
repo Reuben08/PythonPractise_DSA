@@ -25,6 +25,7 @@ print(object.common_purchased_product([
     (101, "Laptop"),
     (202, "Reuben"),
     (101, "Reuben"),
+
     (303, "Reuben"),
     (202, "Reuben"),
     (101, "Reuben"),
