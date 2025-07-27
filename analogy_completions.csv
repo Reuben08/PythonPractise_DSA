@@ -1,0 +1,16 @@
+A,B,C,Predicted Word,Similarity Score
+king,throne,judge,prosecution,0.5186
+giant,dwarf,genius,theorist,0.4281
+college,dean,jail,peress,0.5444
+arc,circle,line,lines,0.4288
+french,france,dutch,netherlands,0.6045
+man,woman,king,queen,0.5532
+water,ice,liquid,solid,0.45
+bad,good,sad,glory,0.4404
+nurse,hospital,teacher,institution,0.4829
+usa,pizza,japan,dishes,0.5764
+human,house,dog,hound,0.4232
+grass,green,sky,blue,0.5479
+video,cassette,computer,peripherals,0.6655
+universe,planet,house,houses,0.4265
+poverty,wealth,sickness,impious,0.4961

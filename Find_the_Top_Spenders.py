@@ -6,7 +6,7 @@ class Reuben():
         customer_spending = Counter()
         for (customer,transaction) in transactions:
             customer_spending[customer] += transaction
-        sorted_transaction = sorted(customer_spending.items(), key = lambda x:x[1], reverse = True)
+        sorted_transaction = sorted(customer_spending.items(), key = lambda x:(-x[1],x[0]))
         return sorted_transaction[:K]
 
 obj = Reuben()
