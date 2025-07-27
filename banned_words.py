@@ -58,10 +58,10 @@ class Reuben:
     def second_largest_num(self, inputList: List[int])->int:
         if not input:
             return float('-inf')
-    max_num = max(inputList)
+    max_num = max(inputList
 
 
-
+# Let me add this piece of code
 
 # ✅ Test Case
 obj = Reuben()

@@ -78,9 +78,6 @@ class Reuben():
 
 
 
-
-
-
 obj = Reuben()
 hashtags = {
     "influencer_1": ["#fitness", "#healthy", "#gym", "#fitness"],

@@ -83,18 +83,3 @@ from typing import List, Tuple
 
 
 
-
-
-reviews = {
-    "New York": ["Wow", "Amazing"],
-    "LA": ["Wow", "Amazing"],
-    "Chicago": ["Amazing"]
-}
-
-
-# 🔍 Expected: "Amazing" appears in 2 locations (NY, Chicago), "Wow" also in 2 → "Amazing" wins lexically
-
-obj = Reuben()
-print("Most common review:", obj.common_review(reviews))
-
-print("Most common review:", obj.common_review_GPT(reviews))
