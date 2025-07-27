@@ -17,7 +17,7 @@ class Reuben():
         for a, b in zip(list1, list2):
             result.append(a+b)
         return result
-    def
+
 
 object = Reuben()
 print(object.find_uncommon_elements([1, 2, 3, 4, 5,90,871234],[1,2,3,4,5,18237]))
