@@ -1,20 +1,20 @@
 from collections import defaultdict, Counter
 from typing import List, Dict
 
-class Reuben():
-    def first_banned_free_word(self, comments: List[str], stop_words: List[str]) -> str:
-        if not comments:
-            return ""
-        array = []
-        for string in comments:
-            clean_string = re.sub(r'[^\w\s]' ,'' ,string.lower())
-            array.extend(clean_string.split())
-            final_array = []
-        for word_final in array:
-            if word_final not in stop_words:
-                final_array.append(word_final)
-                counter_final = Counter(final_array)
-        return counter_final.most_common(1)[0][0]
+# class Reuben():
+#     def first_banned_free_word(self, comments: List[str], stop_words: List[str]) -> str:
+#         if not comments:
+#             return ""
+#         array = []
+#         for string in comments:
+#             clean_string = re.sub(r'[^\w\s]' ,'' ,string.lower())
+#             array.extend(clean_string.split())
+#             final_array = []
+#         for word_final in array:
+#             if word_final not in stop_words:
+#                 final_array.append(word_final)
+#                 counter_final = Counter(final_array)
+#         return counter_final.most_common(1)[0][0]
 
     def most_frequent_product_by_user(self, logs: List[Dict[str, str]]) -> Dict[str, str]:
         if not logs:
