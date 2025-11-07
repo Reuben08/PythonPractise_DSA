@@ -1,22 +1,15 @@
 
-from collections import defaultdict
-class Reuben():
-    def if_anagrams(self, str_1: str, str_2: str) -> bool:
-        if not str_1 or not str_2:
-            return False
-        str_count = defaultdict(int)
-        for string in str_1:
-            str_count[string] += 1
-        for string in str_2:
-            str_count[string] -= 1
-        for string, value in str_count.items():
-            if value != 0:
-                return False
-        return True
 
+from typing import List
 
+def two_sum(nums: List[int], target: int) -> List[int]:
+    if not nums:
+        return [0,0]
+    seen = {}
+    for i, num in enumerate(nums):
+        diff = target - num
+        if diff in seen:
+            return [seen[diff], i]
+        seen[num] = i
 
-
-
-object = Reuben()
-print(object.if_anagrams("ccddaaaa","aaccdd"))
+print(two_sum([2,5,7,9],7))

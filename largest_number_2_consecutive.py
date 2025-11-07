@@ -34,6 +34,8 @@ class Reuben():
         return output
     def max_sum_of_window_size_k(self, nums: List[int], k: int)-> int:
         if not nums or k == 0:
+
+            
             return "null"
         max_array = []
         for i in range(len(nums)-(k+1)):
