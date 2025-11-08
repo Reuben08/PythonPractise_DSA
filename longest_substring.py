@@ -204,39 +204,25 @@
 #         final_out[date_purchased] = prod_counter.most_common(1)[0][0]
 #     return final_out
 
-# Re-import libraries after code execution state reset
-import pandas as pd
 
-# Redefine loan parameters
-P = 62152.07
-annual_rate = 0.0839
-biweekly_rate = annual_rate / 26
-biweekly_payment = 452.06979270654534  # As previously calculated
-biweekly_periods = 7 * 26  # 182 payments
+from typing import List
 
-# Re-initialize values
-starting_balance = 53247.72
-target_balance = 44000
-current_balance = starting_balance
-interest_paid = 0
-payments_count = 0
-schedule_to_target = []
+def max_sum_subarray(arr: List, k: int) -> int:
+    if not arr or not k:
+        return 0
+    sums = []
+    l = 0
+    max_sum = 0
+    for r in range(k,len(arr)):
+        sums.append(sum(arr[l:r]))
+        l += 1
+        interim_sum = sum(arr[l:r])
+        if interim_sum > max_sum:
+            max_sum = interim_sum
+            right,left = r,l
 
-# Calculate payments from 37th onwards until balance hits or drops below 44,000
-while current_balance > target_balance and payments_count < (biweekly_periods - 36):
-    interest = current_balance * biweekly_rate
-    principal_payment = biweekly_payment - interest
-    current_balance -= principal_payment
-    interest_paid += interest
-    payments_count += 1
-    print(f" Payment count:{payments_count}, Interest Paid: {interest_paid}, Principle deducted is:{(452.7*payments_count)-interest_paid}, Current balance: {current_balance}")
-    schedule_to_target.append({
-        "Payment Number": 36 + payments_count,
-        "Payment Amount": round(biweekly_payment, 2),
-        "Principal Paid": round(principal_payment, 2),
-        "Interest Paid": round(interest, 2),
-        "Remaining Balance": round(current_balance, 2)
-    })
+    return max(sums), arr[left:right]
 
+print(max_sum_subarray([1,2,3,4,5,6,7,8,9,9,10,101,1],3))
 
 

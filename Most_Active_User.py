@@ -9,10 +9,9 @@ class Reuben():
         for log in logs:
             log_array.append(log.split()[0])
         activity_counter = Counter(log_array)
-        sorted_counter = sorted(activity_counter.items(), key = lambda x:(-x[1],x[0]))
-        return sorted_counter[0][0]
+        # sorted_counter = sorted(activity_counter.items(), key = lambda x:(-x[1],x[0]))
+        return activity_counter.most_common(1)[0][0]
 
-    def
 
 obj = Reuben()
 print(obj.most_active_user([
