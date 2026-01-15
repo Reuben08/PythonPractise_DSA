@@ -205,24 +205,41 @@
 #     return final_out
 
 
-from typing import List
+# from typing import List
+#
+# def max_sum_subarray(arr: List, k: int) -> int:
+#     if not arr or not k:
+#         return 0
+#     sums = []
+#     l = 0
+#     max_sum = 0
+#     for r in range(k,len(arr)):
+#         sums.append(sum(arr[l:r]))
+#         l += 1
+#         interim_sum = sum(arr[l:r])
+#         if interim_sum > max_sum:
+#             max_sum = interim_sum
+#             right,left = r,l
+#
+#     return max(sums), arr[left:right]
+#
+# print(max_sum_subarray([1,2,3,4,5,6,7,8,9,9,10,101,1],3))
+#
 
-def max_sum_subarray(arr: List, k: int) -> int:
-    if not arr or not k:
-        return 0
-    sums = []
-    l = 0
-    max_sum = 0
-    for r in range(k,len(arr)):
-        sums.append(sum(arr[l:r]))
-        l += 1
-        interim_sum = sum(arr[l:r])
-        if interim_sum > max_sum:
-            max_sum = interim_sum
-            right,left = r,l
+def longest_nice_substring(s: str) -> str:
+    if len(s) < 2:
+        return ""
 
-    return max(sums), arr[left:right]
+    charset = set(s)
+    for i, ch in enumerate(s):
+        if ch.swapcase() not in charset:
+            # split at the bad char and recurse
+            left = longest_nice_substring(s[:i])
+            right = longest_nice_substring(s[i + 1:])
+            return left if len(left) >= len(right) else right
 
-print(max_sum_subarray([1,2,3,4,5,6,7,8,9,9,10,101,1],3))
+    return s  # s is nice
+
+print(longest_nice_substring("YazaAay"))
 
 
