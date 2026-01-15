@@ -50,8 +50,8 @@ from collections import Counter, defaultdict
 #         return True
 #     return False
 #
-#
-# def sub_array_sum(arr: List[int], k: int) -> int:
+
+# def sub_array_sum(arr: list[int], k: int) -> int:
 #     if not arr:
 #         return null
 #     prefix_sum = 0
@@ -65,6 +65,7 @@ from collections import Counter, defaultdict
 #         freq[prefix_sum] += 1
 #
 #     return count
+# print(sub_array_sum([1,1,1,1,1,1,1],3))
 #
 # # print(reverse_array([1,2,3,4,5,6]))
 # # print(return_sorted([123,213,2,42,123,-12,2,323]))
@@ -74,7 +75,7 @@ from collections import Counter, defaultdict
 # # print(sum([1,2,3,4]))
 #
 #
-# print(sub_array_sum([1,1,1,1,1,1,1],3))
+
 #
 # from typing import List
 #
@@ -544,7 +545,101 @@ from typing import List, Tuple
 #             j += 1
 #     merged.extend(left[i:])
 #     merged.extend(right[j:])
-    return merged
+#     return merged
 
 
-print(merge_sort([12, 23123, 2, 33, 12, 2, 1, 45, 57, 8, 32312, 2223, 3]))
+# print(merge_sort([12, 23123, 2, 33, 12, 2, 1, 45, 57, 8, 32312, 2223, 3]))
+
+# class TwoSum:
+#     def __init__(self):
+#         self.nums = []
+#
+#     def add(self, number: int):
+#         self.nums.append(number)
+#
+#     def find(self, target: int) -> bool:
+#         seen = set()
+#         for num in self.nums:
+#             if target - num in seen:
+#                 return True
+#             seen.add(num)
+#         return False
+#
+# stream = TwoSum()
+# stream.add(3)
+# stream.add(5)
+# stream.add(7)
+#
+# print(stream.find(10))  #→ True   # 3 + 7
+# stream.find(8)   #→ True   # 3 + 5
+# print(stream.find(15))  #→ False
+
+from typing import List
+
+
+# def top_k_frequent(nums: list[int], k: int) -> list[int]:
+#     if not nums:
+#         return [0]
+#     nums_counter = Counter(nums)
+#     return nums_counter.most_common(k)
+#
+# print(top_k_frequent([1,1,1,1,1,1,2,2,2,2,2,3,3],2))
+
+from collections import defaultdict
+
+# def product_except_self(nums: list[int]) -> list[int]:
+#     n = len(nums)
+#     output = [1] * n
+#
+#     # First pass: left → right
+#     left_product = 1
+#     for i in range(n):
+#         output[i] = left_product
+#         left_product *= nums[i]
+#     print(output)
+#
+#     # Second pass: right → left
+#     right_product = 1
+#     for i in range(n - 1, -1, -1):
+#         output[i] *= right_product
+#         right_product *= nums[i]
+#
+#     return output
+
+# print()
+#
+# # nums = [1,2,3,4]
+# # for i,num in enumerate(nums[::-1]):
+# #     print(i,num)
+
+
+from collections import deque
+from typing import List, Tuple
+
+
+def rolling_unique_users(events: List[Tuple[int, str]]) -> List[Tuple[int, int]]:
+    if not events:
+        return []
+
+    window = deque()
+    result = []
+
+    for timestamp, user in events:
+        window.append((timestamp, user))
+        while window and timestamp - window[0][0] >= 60:
+            window.popleft()
+        unique_user = set(u for _, u in window)
+        result.append((timestamp, len(unique_user)))
+
+    return result
+
+
+events = [
+    (1, "u1"),
+    (2, "u2"),
+    (61, "u1"),
+    (62, "u3"),
+    (120, "u2"),
+]
+
+print(rolling_unique_users(events))
