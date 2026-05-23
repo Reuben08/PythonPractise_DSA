@@ -14,7 +14,7 @@ class Reuben():
             return ""
         all_words = []
         for comment in comments:
-            clean_comment = re.sub('r[^\w\s]','',comment.lower())
+            clean_comment = re.sub(r'[^\w\s]','',comment.lower())
             all_words.extend(clean_comment.split())
         final_array = []
         for word in all_words:

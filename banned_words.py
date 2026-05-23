@@ -52,7 +52,7 @@ class Reuben:
             user = log["user_id"]
             amount = log["amount"]
             amount_counter[user] += amount
-        sorted_amount = sorted(amount_counter.items(), key = lamnda x:(-x[1],x[0]))
+        sorted_amount = sorted(amount_counter.items(), key = lambda x:(-x[1],x[0]))
         return sorted_amount[0][0]
 
     def second_largest_num(self, inputList: List[int])->int:
