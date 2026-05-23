@@ -5,7 +5,7 @@ class Reuben():
         if not input:
             return False
         sorted_input = sorted(input)
-        for i in range(len(sorted_input)):
+        for i in range(len(sorted_input) - 1):
             if sorted_input[i][1] > sorted_input[i+1][0]:
                 return False
             else:
