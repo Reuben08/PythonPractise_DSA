@@ -1,0 +1,150 @@
+version: '3.8'
+
+# ── Shared Airflow config block ──────────────────────────────────────────────
+# Both airflow-webserver and airflow-scheduler use this exact same config.
+# The &airflow-common anchor lets us reuse it without repeating ourselves.
+x-airflow-common:
+  &airflow-common
+  image: apache/airflow:2.9.2-python3.11
+  environment:
+    # LocalExecutor: tasks run inside the scheduler process — no Redis/workers needed
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+
+    # Where Airflow stores its own metadata (DAG runs, task states, logs index)
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+
+    # Fernet key encrypts sensitive values (passwords, connections) stored in Airflow's DB
+    AIRFLOW__CORE__FERNET_KEY: 'zTmfFB2eLKQXbFlMsGCeZ0eLkuCHCpBfp59cRl3RJQ4='
+
+    # Don't pause new DAGs automatically — we want them active on first deploy
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+
+    # Turn off Airflow's built-in tutorial DAGs — we only want our own
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+
+    # Allow both basic auth (for API calls) and session auth (for the UI)
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+
+    # Extra pip packages installed into the Airflow image at startup
+    # Keeps us from needing a custom Dockerfile for Airflow
+    _PIP_ADDITIONAL_REQUIREMENTS: 'pandas==2.1.4 numpy==1.26.4 psycopg2-binary==2.9.9 scikit-learn==1.4.0 requests==2.31.0'
+
+    # Connection details for our ml_pipeline DB — read by validation/processing/curation DAGs
+    ML_PIPELINE_DB_HOST: postgres
+    ML_PIPELINE_DB_PORT: 5432
+    ML_PIPELINE_DB_NAME: ml_pipeline
+    ML_PIPELINE_DB_USER: airflow
+    ML_PIPELINE_DB_PASSWORD: airflow
+
+  volumes:
+    # Mount our DAG files into Airflow's DAG folder so it picks them up live
+    - ./dags:/opt/airflow/dags
+    # Mount our pipeline logic so DAGs can import from pipelines/
+    - ./pipelines:/opt/airflow/pipelines
+    # Shared data directory — DAGs read/write raw, processed, curated data here
+    - ./data:/opt/airflow/data
+    # Persist Airflow task logs across container restarts
+    - airflow_logs:/opt/airflow/logs
+
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  # One container, two databases:
+  #   - airflow     : Airflow's internal metadata (managed by Airflow itself)
+  #   - ml_pipeline : our pipeline metadata (quality metrics, pipeline runs, dataset stats)
+  postgres:
+    image: postgres:15
+    restart: always   # Come back after a reboot — Airflow's user table lives here
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow          # Airflow's database (created automatically)
+    ports:
+      - "5432:5432"                 # Expose so we can connect from local tools (DBeaver, psql)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # This SQL file runs automatically on first startup — creates our ml_pipeline DB + tables
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  # ── Airflow Init ────────────────────────────────────────────────────────────
+  # Runs ONCE on first startup. Initialises Airflow's database schema and
+  # creates the admin user. After it completes, webserver and scheduler start.
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db init &&
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Reuben \
+          --lastname Haruray \
+          --role Admin \
+          --email reubenharuray@gmail.com
+    restart: on-failure
+
+
+  # ── Airflow Webserver ───────────────────────────────────────────────────────
+  # The UI at http://localhost:8080
+  # Login: admin / admin
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    restart: always
+
+
+  # ── Airflow Scheduler ───────────────────────────────────────────────────────
+  # Watches the dags/ folder, triggers runs on schedule, executes tasks locally
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    restart: always
+
+
+  # ── Streamlit Dashboard ─────────────────────────────────────────────────────
+  # Our monitoring dashboard at http://localhost:8501
+  # Reads from ml_pipeline DB to show pipeline health, quality metrics, dataset stats
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./dashboard:/app       # Live-reload dashboard code without rebuilding
+      - ./data:/data           # Access curated datasets for stats
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ml_pipeline
+      DB_USER: airflow
+      DB_PASSWORD: airflow
+    depends_on:
+      - postgres
+    restart: always
+
+
+volumes:
+  postgres_data:    # Persists Postgres data across docker-compose down/up
+  airflow_logs:     # Persists Airflow task logs across container restarts
