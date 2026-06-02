@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 # ── Constants ─────────────────────────────────────────────────────────────────
 
 UCI_HAR_URL = (
-    "https://archive.ics.uci.edu/ml/machine-learning-databases"
-    "/00240/UCI%20HAR%20Dataset.zip"
+    "https://archive.ics.uci.edu/static/public/240"
+    "/human+activity+recognition+using+smartphones.zip"
 )
 
 # UCI HAR uses integer codes 1-6 for activities. This maps them to readable labels.
@@ -55,16 +55,19 @@ def download_uci_har(output_dir: str) -> str:
     else:
         print("Zip already exists, skipping download.")
 
-    extract_path = os.path.join(output_dir, "UCI HAR Dataset")
+    # Detect the top-level folder name inside the zip dynamically.
+    # The old URL had "UCI HAR Dataset/", the new URL may differ.
+    with zipfile.ZipFile(zip_path, "r") as z:
+        top_level_dirs = {name.split("/")[0] for name in z.namelist() if "/" in name}
+        top_dir = sorted(top_level_dirs)[0]  # take the first (usually only) top-level folder
+        extract_path = os.path.join(output_dir, top_dir)
 
-    # Skip extraction if already extracted — same idempotency logic
-    if not os.path.exists(extract_path):
-        print("Extracting zip...")
-        with zipfile.ZipFile(zip_path, "r") as z:
+        if not os.path.exists(extract_path):
+            print("Extracting zip...")
             z.extractall(output_dir)
-        print("Extraction complete.")
-    else:
-        print("Already extracted, skipping.")
+            print(f"Extracted to: {extract_path}")
+        else:
+            print("Already extracted, skipping.")
 
     return extract_path
 
