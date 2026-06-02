@@ -1,0 +1,8 @@
+data/raw/**
+data/processed/**
+data/curated/**
+!data/**/.gitkeep
+logs/
+__pycache__/
+*.pyc
+.DS_Store
